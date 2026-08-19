@@ -1,0 +1,17 @@
+# Node / frontend
+node_modules/
+dist/
+dev-dist/
+.env
+.env.*.local
+
+# Python / backend
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS / editor
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
