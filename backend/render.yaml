@@ -4,11 +4,7 @@ services:
     runtime: python
     plan: free
     buildCommand: "pip install -r requirements.txt"
-    # --workers 1: free tier has 512MB RAM and 0.1 CPU. A second uvicorn
-    # worker would mean a second copy of the model in memory -> likely OOM.
-    # --timeout-keep-alive raised because the free tier's cold start
-    # (after 15 min idle) takes ~30-60s; give the first request room to land.
-    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 1 --timeout-keep-alive 75"
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
