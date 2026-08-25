@@ -1,0 +1,156 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+/*
+  WilpattuVision design tokens
+  -----------------------------------------------------------------
+  Palette named after park features rather than generic "primary/secondary":
+    canopy   - deep dry-zone forest green (headers, nav, primary actions)
+    bark     - dark brown-black (body text, footer)
+    villu    - pale sand/lake tone from the park's natural clearings (backgrounds)
+    clay     - baked-earth terracotta/ochre (accent, CTAs, highlights)
+    amber    - leopard-gold (secondary accent, badges, ratings)
+    mist     - soft neutral for cards/borders in light mode
+*/
+@theme {
+  --font-display: "Fraunces", "Georgia", serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --color-canopy-50: #f2f5f4;
+  --color-canopy-100: #d9e1df;
+  --color-canopy-200: #a7b9b3;
+  --color-canopy-300: #749288;
+  --color-canopy-400: #3b6556;
+  --color-canopy-500: #043927;
+  --color-canopy-600: #033021;
+  --color-canopy-700: #032519;
+  --color-canopy-800: #021a12;
+  --color-canopy-900: #01100b;
+
+  --color-bark-50: #f5f1ee;
+  --color-bark-100: #e3d9d1;
+  --color-bark-200: #c2ac9c;
+  --color-bark-300: #9c7c66;
+  --color-bark-400: #785943;
+  --color-bark-500: #4a3a2e;
+  --color-bark-600: #3a2d24;
+  --color-bark-700: #2c221b;
+  --color-bark-800: #1f1712;
+  --color-bark-900: #140e0b;
+
+  --color-villu-50: #fbf9f4;
+  --color-villu-100: #f5efe3;
+  --color-villu-200: #ecdfc7;
+  --color-villu-300: #e0cba3;
+  --color-villu-400: #d0b17b;
+
+  --color-clay-50: #fbeee4;
+  --color-clay-100: #f3d3b8;
+  --color-clay-200: #e7ae83;
+  --color-clay-300: #d68c56;
+  --color-clay-400: #b5673a;
+  --color-clay-500: #954f2c;
+  --color-clay-600: #783e22;
+
+  --color-amber-100: #f5e3b3;
+  --color-amber-300: #e0b256;
+  --color-amber-400: #cf9a3a;
+  --color-amber-500: #a97a26;
+
+  --color-danger-500: #a6402f;
+  --color-success-500: #4a7a3a;
+
+  --shadow-soft: 0 8px 24px -8px rgb(20 30 19 / 0.25);
+  --radius-organic: 1.5rem 0.5rem 1.5rem 0.5rem;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-villu-100 text-bark-700 font-sans antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display text-bark-800;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-clay-400);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-canopy-500 px-5 py-2.5
+           text-sm font-semibold text-villu-50 shadow-soft transition-colors
+           hover:bg-canopy-600 disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-canopy-300
+           bg-transparent px-5 py-2.5 text-sm font-semibold text-canopy-600 transition-colors
+           hover:bg-canopy-50 disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-clay {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-clay-400 px-5 py-2.5
+           text-sm font-semibold text-villu-50 shadow-soft transition-colors
+           hover:bg-clay-500 disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .card {
+    @apply rounded-2xl border border-canopy-100 bg-white/70 backdrop-blur-sm shadow-soft;
+  }
+
+  .input-field {
+    @apply w-full rounded-xl border border-canopy-200 bg-white px-4 py-2.5 text-sm text-bark-700
+           placeholder:text-bark-300 focus:border-clay-400 focus:ring-2 focus:ring-clay-100;
+  }
+
+  .label-eyebrow {
+    @apply font-mono text-xs uppercase tracking-[0.2em] text-clay-500;
+  }
+}
+
+
+.gm-style-iw-c {
+  padding: 12px !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 24px -8px rgba(20, 30, 19, 0.35) !important;
+}
+.gm-style-iw-d {
+  overflow: visible !important;
+}
+.gm-style-iw-t::after {
+  background: linear-gradient(45deg, #fff 50%, transparent 51%, transparent 100%) !important;
+}
+.gm-ui-hover-effect {
+  top: 4px !important;
+  right: 4px !important;
+}
+
+/* Leaflet Popup */
+.leaflet-popup-content-wrapper {
+  border-radius: 16px !important;
+  box-shadow: 0 8px 24px -8px rgba(20, 30, 19, 0.35) !important;
+}
+.leaflet-popup-content {
+  margin: 12px !important;
+}
+.leaflet-popup-tip {
+  box-shadow: 0 8px 24px -8px rgba(20, 30, 19, 0.35) !important;
+}
