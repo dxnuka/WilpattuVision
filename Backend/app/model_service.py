@@ -71,6 +71,8 @@ class ModelService:
     @staticmethod
     def _humanize(raw_label: str) -> str:
         """'Sri_Lankan_leopard' -> 'Sri Lankan leopard'"""
+        if raw_label == config.NONE_OF_ABOVE_RAW_LABEL:
+            return "Not a recognizable species"
         return raw_label.replace("_", " ")
 
     def _decode_image(self, file_bytes: bytes) -> Image.Image:
