@@ -1,6 +1,8 @@
+import { useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import MainLayout from './components/layout/MainLayout'
 import ProtectedRoute from './components/common/ProtectedRoute'
+import { downloadOfflineModel, isOfflineModelSaved } from './lib/offlineModel'
 
 import Home from './pages/Home'
 import SpeciesEncyclopedia from './pages/SpeciesEncyclopedia'
@@ -14,6 +16,7 @@ import Submissions from './pages/Submissions'
 import Profile from './pages/Profile'
 import Notices from './pages/Notices'
 import SightingLogAdmin from './pages/admin/SightingLogAdmin'
+import SightingDetail from './pages/SightingDetail'
 import SightingDetailAdmin from './pages/admin/SightingDetailAdmin'
 import AdminUsers from './pages/admin/AdminUsers'
 import AdminConservation from './pages/admin/AdminConservation'
@@ -22,9 +25,14 @@ import Login from './pages/Login'
 import Signup from './pages/Signup'
 import About from './pages/About'
 import NotFound from './pages/NotFound'
-import SightingDetail from './pages/SightingDetail'
 
 export default function App() {
+  useEffect(() => {
+      if (!navigator.onLine) return
+      isOfflineModelSaved().then((saved) => {
+        if (!saved) downloadOfflineModel().catch(() => {})
+      })
+    }, [])
   return (
     <Routes>
       <Route element={<MainLayout />}>
@@ -35,7 +43,9 @@ export default function App() {
         <Route path="/map" element={<ParkMap />} />
         <Route path="/conservation" element={<Conservation />} />
         <Route path="/conservation/:id" element={<ConservationArticleDetail />} />
+        <Route path="/conservation/:id" element={<ConservationArticleDetail />} />
         <Route path="/sightings/:id" element={<SightingDetail />} />
+        <Route path="/about" element={<About />} />
         <Route path="/about" element={<About />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
