@@ -1,0 +1,122 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- helpers ----------
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // ---------- users ----------
+    // Public profile-ish doc, keyed by uid. Users manage their own profile
+    // fields; only admins may change `role` or `restricted`.
+    match /users/{uid} {
+      allow read: if isOwner(uid) || isAdmin() || resource.data.restricted == true;
+
+      allow create: if isOwner(uid)
+        && request.resource.data.role == 'visitor'
+        && request.resource.data.restricted == false;
+
+      allow update: if isAdmin()
+        || (
+          isOwner(uid)
+          && request.resource.data.role == resource.data.role
+          && request.resource.data.restricted == resource.data.restricted
+        );
+
+      allow delete: if isAdmin();
+    }
+
+    // ---------- sightings ----------
+    // Any signed-in user can log a sighting for themselves. Verified
+    // sightings are publicly readable; pending/rejected ones are only
+    // visible to their owner and admins. Only admins review/edit status.
+    match /sightings/{id} {
+      allow read: if resource.data.verificationStatus == 'verified'
+        || isOwner(resource.data.u_id)
+        || isAdmin();
+
+      allow create: if isSignedIn()
+        && request.resource.data.u_id == request.auth.uid
+        && (
+          request.resource.data.verificationStatus == 'pending'
+          || (request.resource.data.verificationStatus == 'verified' && isAdmin())
+        );
+
+      // Status changes / admin edits.
+      allow update: if isAdmin();
+
+      // Owners may delete their own still-pending sighting; admins can
+      // delete any.
+      allow delete: if isAdmin()
+        || (isOwner(resource.data.u_id) && resource.data.verificationStatus == 'pending');
+    }
+
+    // ---------- conservationArticles ----------
+    match /conservationArticles/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ---------- galleryImages ----------
+    match /galleryImages/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ---------- hotspots ----------
+    match /hotspots/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ---------- notices ----------
+    // recipientUid is either a specific uid or the literal string 'all'.
+    match /notices/{id} {
+      allow read: if resource.data.recipientUid == 'all'
+        || isOwner(resource.data.recipientUid)
+        || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ---------- noticeReads ----------
+    // Doc id is `${uid}_${noticeId}`; users only ever touch their own.
+    match /noticeReads/{id} {
+      allow read: if isSignedIn() && resource.data.uid == request.auth.uid;
+      allow create: if isSignedIn()
+        && request.resource.data.uid == request.auth.uid
+        && id == request.auth.uid + '_' + request.resource.data.noticeId;
+      allow update, delete: if false;
+    }
+
+    // ---------- predictions ----------
+    // Predictions can be logged anonymously (u_id may be null) from the
+    // species identifier, so creation is open — but only the owner (or an
+    // admin) can ever read a given prediction back. Anonymous ones are
+    // unreadable by anyone except admins, matching the app's behavior.
+    match /predictions/{id} {
+      allow read: if isAdmin()
+        || (resource.data.u_id != null && isOwner(resource.data.u_id));
+
+      allow create: if request.resource.data.u_id == null
+        || request.resource.data.u_id == request.auth.uid;
+
+      allow update, delete: if isAdmin();
+    }
+
+    // Deny everything else by default.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
