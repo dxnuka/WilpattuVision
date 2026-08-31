@@ -66,6 +66,3 @@ Required environment variables (see `.env.example`):
 - **Firestore Security Rules** (`firestore.rules` ) govern data access and must be published via the Firebase Console after any changes.
 - A scheduled **GitHub Actions** workflow (`.github/workflows/keep-warm.yml`) pings the backend's `/health` endpoint periodically.
 
-## License
-
-[Add your license here, e.g. MIT.]
